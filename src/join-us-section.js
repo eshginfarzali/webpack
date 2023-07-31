@@ -1,9 +1,9 @@
 import validate from "./email-validator.js";
 
 const JoinUsSection = (function () {
-    function createSection(title, buttonText) {
-      const joinSection = document.getElementById("join-our-program");
-      joinSection.innerHTML = `
+	function createSection(title, buttonText) {
+		const joinSection = document.getElementById("join-our-program");
+		joinSection.innerHTML = `
         <h2>${title}</h2>
         <h3>Sed do eiusmod tempor incididunt <br />
         ut labore et dolore magna aliqua.</h3>
@@ -12,37 +12,50 @@ const JoinUsSection = (function () {
             <button id="subscribe" class="join-team-btn" type="submit">${buttonText}</button>
         </form>
       `;
-      const form = document.getElementById("join-form");
-      const input = document.getElementById("inp");
-      function getFormInputValue(e) {
-        e.preventDefault();
-        const email = input.value;
-        
-        if (validate(email)) {
-          console.log("Email is valid:", email);
-          alert(`Email is valid: ${email}`);
-        } else {
-          console.log("Email is not valid:", email);
-          alert("Email is not valid");
-        }
+		const form = document.getElementById("join-form");
+		const input = document.getElementById("inp");
+    
+		function getFormInputValue(e) {
+			e.preventDefault();
+			const email = input.value;
   
-        input.value = "";
-      }
+			if (validate(email)) {
+				localStorage.setItem("subscriptionEmail", email);
+				input.style.display = "none";
+				document.getElementById("subscribe").textContent = "Unsubscribe";
+			} else {
+				alert("is not valid email");
+			}
   
-      form.addEventListener("submit", getFormInputValue);
-    }
+			input.value = "";
+		}
   
-    // Public methods
-    return {
-      createStandardProgram: function () {
-        createSection("Join Our Program", "Subscribe");
-      },
-      createAdvancedProgram: function () {
-        createSection("Join Our Advanced Program", "Subscribe to Advanced Program");
-      },
-    };
-  })();
+		form.addEventListener("submit", getFormInputValue);
+    
+		const savedEmail = localStorage.getItem("subscriptionEmail");
+		if (savedEmail) {
+			input.value = savedEmail;
+		}
   
-  export default JoinUsSection;
-
-
+		document.getElementById("subscribe").addEventListener("click", function () {
+			if (this.textContent === "Unsubscribe") {
+				localStorage.removeItem("subscriptionEmail");
+				input.style.display = "flex";
+				form.style.display = "flex";
+				this.textContent = "Subscribe";
+			}
+		});
+	}
+  
+	
+	return {
+		createStandardProgram: function () {
+			createSection("Join Our Program", "Subscribe");
+		},
+		createAdvancedProgram: function () {
+			createSection("Join Our Advanced Program", "Subscribe to Advanced Program");
+		},
+	};
+})();
+  
+export default JoinUsSection;
